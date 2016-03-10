@@ -1,0 +1,78 @@
+data segment ;define data segment
+ source_buffer db 40 dup('a')
+ data ends
+ ;*************************************
+ extra segment          ;define extra segment
+ dest_buffer  db  40 dup(?)
+ extra end
+ ;*************************************
+ code segment            ;define code segment
+ ;-------------------------------------
+ main proc far           ;main part of progaram
+    assume cs:code,ds:data,es:extra
+ start:                  ;starting execution address
+ ;set up stack fo return
+    push  ds
+    sub   ax,ax
+    push  ax
+    
+    mov ax,data
+    mov es,ax
+    
+    lea   si,source_buffer
+    
+    lea   di,dest_buffer
+    
+    cld
+    mov  xc,40
+    rep
+    ret
+    main  endp
+    code  ends
+    end  start
+
+
+
+
+ datarea segment ;define data segment
+ string1 db 'aaa'
+ string2 db 'aaa'         
+ mess1 db 'Match.','$'
+ mess2 db 'No match!','$'
+ datarea ends 
+ prognam segment  
+ main proc far                  
+ assume cs:prognam,ds:datarea,es:datarea
+ start:
+ push ds 
+ sub ax,dx
+ push ax
+ mov ax,datarea
+ mov ds,ax
+ mov es,ax
+ lea si,string1
+ lea di,string2
+ cld 
+ mov cx,3
+ repe cmpsb
+ jz match
+ lea dx,mess2
+ jmp short disp
+ match:
+ lea dx,mess1
+ disp:
+ mov ah,09h
+ int 21h
+ mov ah,4ch
+ int 21h
+ main endp 
+ prognam  ends
+ end  start
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
